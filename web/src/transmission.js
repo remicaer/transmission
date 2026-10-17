@@ -221,6 +221,9 @@ export class Transmission extends EventTarget {
         case 'trash-selected-torrents':
           this._removeSelectedTorrents(true);
           break;
+        case 'toggle-sequential-download':
+          this._toggleSequentialDownload(this.getSelectedTorrents());
+          break;
         case 'verify-selected-torrents':
           this._verifyTorrents(this.getSelectedTorrents());
           break;
@@ -978,6 +981,17 @@ TODO: fix this when notifications get fixed
   _verifyTorrents(torrents) {
     this.remote.verifyTorrents(
       Transmission._getTorrentIds(torrents),
+      this.refreshTorrents,
+      this,
+    );
+  }
+
+  // turns sequential download on unless every torrent already has it
+  _toggleSequentialDownload(torrents) {
+    const enable = !torrents.every((t) => t.isSequentialDownload());
+    this.remote.setSequentialDownload(
+      Transmission._getTorrentIds(torrents),
+      enable,
       this.refreshTorrents,
       this,
     );

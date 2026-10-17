@@ -33,6 +33,7 @@ export class ContextMenu extends EventTarget {
     for (const [action, item] of Object.entries(this.actions)) {
       setEnabled(item, this.action_manager.isEnabled(action));
     }
+    this._updateSequentialDownloadCheck();
     document.body.append(this.root);
   }
 
@@ -47,6 +48,20 @@ export class ContextMenu extends EventTarget {
       }
       this.closed = true;
     }
+  }
+
+  _updateSequentialDownloadCheck() {
+    const item = this.actions['toggle-sequential-download'];
+    if (!item) {
+      return;
+    }
+    const selected = this.controller.getSelectedTorrents();
+    const n_on = selected.filter((t) => t.isSequentialDownload()).length;
+    let checked = 'false';
+    if (n_on > 0) {
+      checked = n_on === selected.length ? 'true' : 'mixed';
+    }
+    item.setAttribute('aria-checked', checked);
   }
 
   _update(event_) {
@@ -76,6 +91,9 @@ export class ContextMenu extends EventTarget {
         item.classList.add('context-menuitem');
       }
       item.dataset.action = action;
+      if (action === 'toggle-sequential-download') {
+        item.role = 'menuitemcheckbox';
+      }
       item.textContent = text;
       const keyshortcuts = this.action_manager.keyshortcuts(action);
       if (keyshortcuts) {
@@ -188,6 +206,8 @@ export class ContextMenu extends EventTarget {
         new_item('show-move-dialog'),
         new_item('show-rename-dialog'),
         new_item('show-labels-dialog'),
+        new_separator(),
+        new_item('toggle-sequential-download'),
         new_separator(),
         new_item('reannounce-selected-torrents'),
         new_separator(),
