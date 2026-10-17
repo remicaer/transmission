@@ -4,6 +4,7 @@
 
 #import <Sparkle/Sparkle.h>
 #include <libtransmission/utils.h>
+#include <libtransmission/variant.h>
 
 #import "VDKQueue.h"
 
@@ -1014,6 +1015,14 @@ static NSString* const kWebUIURLFormat = @"http://localhost:%ld/";
     tr_sessionSetIncompleteFileNamingEnabled(self.fHandle, [self.fDefaults boolForKey:@"RenamePartialFiles"]);
 }
 
+- (void)setSequentialDownloadDefault:(id)sender
+{
+    tr_variant settings;
+    tr_variantInitDict(&settings, 1);
+    tr_variantDictAddBool(&settings, TR_KEY_sequential_download, [self.fDefaults boolForKey:@"SequentialDownload"]);
+    tr_sessionSet(self.fHandle, settings);
+}
+
 - (void)setShowAddMagnetWindow:(id)sender
 {
     [self.fDefaults setBool:(self.fShowMagnetAddWindowCheck.state == NSControlStateValueOn) forKey:@"MagnetOpenAsk"];
@@ -1329,6 +1338,11 @@ static NSString* const kWebUIURLFormat = @"http://localhost:%ld/";
 
     BOOL const usePartialFileRenaming = tr_sessionIsIncompleteFileNamingEnabled(self.fHandle);
     [self.fDefaults setBool:usePartialFileRenaming forKey:@"RenamePartialFiles"];
+
+    auto sessionSettings = tr_sessionGetSettings(self.fHandle);
+    auto sequentialDownload = false;
+    tr_variantDictFindBool(&sessionSettings, TR_KEY_sequential_download, &sequentialDownload);
+    [self.fDefaults setBool:sequentialDownload forKey:@"SequentialDownload"];
 
     //utp
     BOOL const utp = tr_sessionIsUTPEnabled(self.fHandle);

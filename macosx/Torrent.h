@@ -80,6 +80,7 @@ extern NSString* const kTorrentDidChangeGroupNotification;
 @property(nonatomic, readonly) BOOL waitingToStart;
 
 @property(nonatomic) tr_priority_t priority;
+@property(nonatomic) BOOL sequentialDownload;
 
 + (BOOL)trashFile:(NSString*)path error:(NSError**)error;
 - (void)moveTorrentDataFileTo:(NSString*)folder;

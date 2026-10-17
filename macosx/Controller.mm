@@ -72,6 +72,7 @@ static ToolbarItemIdentifier const ToolbarItemIdentifierPauseResumeSelected = @"
 static ToolbarItemIdentifier const ToolbarItemIdentifierFilter = @"Toolbar Toggle Filter";
 static ToolbarItemIdentifier const ToolbarItemIdentifierQuickLook = @"Toolbar QuickLook";
 static ToolbarItemIdentifier const ToolbarItemIdentifierShare = @"Toolbar Share";
+static ToolbarItemIdentifier const ToolbarItemIdentifierSequentialDownload = @"Toolbar Sequential Download";
 
 typedef NS_ENUM(NSUInteger, ToolbarGroupTag) { //
     ToolbarGroupTagPause = 0,
@@ -173,6 +174,57 @@ static tr_rpc_callback_status rpcCallback([[maybe_unused]] tr_session* handle, t
 {
     [(__bridge Controller*)controller rpcCallback:type forTorrentStruct:torrentStruct];
     return TR_RPC_NOREMOVE; //we'll do the remove manually
+}
+
+// On only when every torrent is sequential; mixed when some are
+static NSControlStateValue sequentialDownloadState(NSArray<Torrent*>* torrents)
+{
+    NSUInteger const nOn = [torrents indexesOfObjectsPassingTest:^BOOL(Torrent* torrent, NSUInteger, BOOL*) {
+                               return torrent.sequentialDownload;
+                           }].count;
+    if (nOn == 0)
+    {
+        return NSControlStateValueOff;
+    }
+    return nOn == torrents.count ? NSControlStateValueOn : NSControlStateValueMixed;
+}
+
+// SF Symbols has no slashed variant of "list.number", so the "off" image draws its own slash
+static NSImage* sequentialDownloadToolbarImage(BOOL enabled)
+{
+    static NSImage* onImage;
+    static NSImage* offImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        onImage = [NSImage imageWithSystemSymbolName:@"list.number"
+                            accessibilityDescription:NSLocalizedString(@"Sequential download on", "Toolbar item -> accessibility")];
+
+        NSImage* base = onImage;
+        offImage = [NSImage imageWithSize:base.size flipped:NO drawingHandler:^BOOL(NSRect rect) {
+            [base drawInRect:rect];
+
+            NSBezierPath* slash = [NSBezierPath bezierPath];
+            NSRect const slashRect = NSInsetRect(rect, NSWidth(rect) * 0.1, NSHeight(rect) * 0.05);
+            [slash moveToPoint:NSMakePoint(NSMinX(slashRect), NSMaxY(slashRect))];
+            [slash lineToPoint:NSMakePoint(NSMaxX(slashRect), NSMinY(slashRect))];
+            slash.lineCapStyle = NSLineCapStyleRound;
+            [NSColor.blackColor set];
+
+            //clear a gap around the slash so it stays legible over the symbol
+            NSGraphicsContext.currentContext.compositingOperation = NSCompositingOperationDestinationOut;
+            slash.lineWidth = 3.5;
+            [slash stroke];
+
+            NSGraphicsContext.currentContext.compositingOperation = NSCompositingOperationSourceOver;
+            slash.lineWidth = 1.5;
+            [slash stroke];
+            return YES;
+        }];
+        [offImage setTemplate:YES];
+        offImage.accessibilityDescription = NSLocalizedString(@"Sequential download off", "Toolbar item -> accessibility");
+    });
+
+    return enabled ? onImage : offImage;
 }
 
 // 2.90 was infected with ransomware which we now check for and attempt to remove
@@ -536,6 +588,7 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
         tr_variantDictAddReal(&settings, TR_KEY_ratio_limit, [_fDefaults floatForKey:@"RatioLimit"]);
         tr_variantDictAddBool(&settings, TR_KEY_ratio_limit_enabled, [_fDefaults boolForKey:@"RatioCheck"]);
         tr_variantDictAddBool(&settings, TR_KEY_rename_partial_files, [_fDefaults boolForKey:@"RenamePartialFiles"]);
+        tr_variantDictAddBool(&settings, TR_KEY_sequential_download, [_fDefaults boolForKey:@"SequentialDownload"]);
         tr_variantDictAddBool(&settings, TR_KEY_rpc_authentication_required, [_fDefaults boolForKey:@"RPCAuthorize"]);
         tr_variantDictAddBool(&settings, TR_KEY_rpc_enabled, [_fDefaults boolForKey:@"RPC"]);
         tr_variantDictAddInt(&settings, TR_KEY_rpc_port, [_fDefaults integerForKey:@"RPCPort"]);
@@ -2271,6 +2324,19 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
 - (void)verifySelectedTorrents:(id)sender
 {
     [self verifyTorrents:self.fTableView.selectedTorrents];
+}
+
+- (void)toggleSequentialDownloadSelected:(id)sender
+{
+    NSArray<Torrent*>* torrents = self.fTableView.selectedTorrents;
+    BOOL const enable = sequentialDownloadState(torrents) != NSControlStateValueOn;
+    for (Torrent* torrent in torrents)
+    {
+        torrent.sequentialDownload = enable;
+    }
+
+    [self.fWindow.toolbar validateVisibleItems];
+    [NSNotificationCenter.defaultCenter postNotificationName:@"UpdateOptionsNotification" object:self];
 }
 
 - (void)verifyTorrents:(NSArray<Torrent*>*)torrents
@@ -4404,6 +4470,20 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
 
         return item;
     }
+    else if ([ident isEqualToString:ToolbarItemIdentifierSequentialDownload])
+    {
+        ButtonToolbarItem* item = [self standardToolbarButtonWithIdentifier:ident];
+        ((NSButtonCell*)((NSButton*)item.view).cell).showsStateBy = NSContentsCellMask; //blue when enabled
+
+        item.label = NSLocalizedString(@"Sequential", "Sequential download toolbar item -> label");
+        item.paletteLabel = NSLocalizedString(@"Download Sequentially", "Sequential download toolbar item -> palette label");
+        item.toolTip = NSLocalizedString(@"Download the selected transfers in order, from first piece to last", "Sequential download toolbar item -> tooltip");
+        item.image = sequentialDownloadToolbarImage(NO);
+        item.target = self;
+        item.action = @selector(toggleSequentialDownloadSelected:);
+
+        return item;
+    }
     else if ([ident isEqualToString:ToolbarItemIdentifierShare])
     {
         ShareToolbarItem* item = [self toolbarButtonWithIdentifier:ident forToolbarButtonClass:[ShareToolbarItem class]];
@@ -4466,6 +4546,7 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
         ToolbarItemIdentifierRemove,
         ToolbarItemIdentifierPauseResumeSelected,
         ToolbarItemIdentifierPauseResumeAll,
+        ToolbarItemIdentifierSequentialDownload,
         ToolbarItemIdentifierShare,
         ToolbarItemIdentifierQuickLook,
         ToolbarItemIdentifierFilter,
@@ -4484,6 +4565,7 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
         NSToolbarSpaceItemIdentifier,
         ToolbarItemIdentifierPauseResumeAll,
         NSToolbarFlexibleSpaceItemIdentifier,
+        ToolbarItemIdentifierSequentialDownload,
         ToolbarItemIdentifierShare,
         ToolbarItemIdentifierQuickLook,
         ToolbarItemIdentifierFilter,
@@ -4572,6 +4654,15 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
     if ([ident isEqualToString:ToolbarItemIdentifierQuickLook])
     {
         ((NSButton*)toolbarItem.view).state = self.fPreviewPanel != nil;
+        return self.fTableView.numberOfSelectedRows > 0;
+    }
+
+    //set sequential download item
+    if ([ident isEqualToString:ToolbarItemIdentifierSequentialDownload])
+    {
+        BOOL const allOn = sequentialDownloadState(self.fTableView.selectedTorrents) == NSControlStateValueOn;
+        ((NSButton*)toolbarItem.view).state = allOn ? NSControlStateValueOn : NSControlStateValueOff;
+        toolbarItem.image = sequentialDownloadToolbarImage(allOn);
         return self.fTableView.numberOfSelectedRows > 0;
     }
 
@@ -4951,6 +5042,13 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
             }
         }
         return NO;
+    }
+
+    //enable sequential download item
+    if (action == @selector(toggleSequentialDownloadSelected:))
+    {
+        menuItem.state = canUseTable ? sequentialDownloadState(self.fTableView.selectedTorrents) : NSControlStateValueOff;
+        return canUseTable && self.fTableView.numberOfSelectedRows > 0;
     }
 
     //enable move torrent file item

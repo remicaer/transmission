@@ -474,6 +474,16 @@ static bool trashDataFile(char const* filename, void* /*user_data*/, tr_error* e
     return tr_torrentSetPriority(self.fHandle, priority);
 }
 
+- (BOOL)sequentialDownload
+{
+    return tr_torrentUsesSequentialDownload(self.fHandle);
+}
+
+- (void)setSequentialDownload:(BOOL)sequentialDownload
+{
+    tr_torrentUseSequentialDownload(self.fHandle, sequentialDownload);
+}
+
 + (BOOL)trashFile:(NSString*)path error:(NSError**)error
 {
     // Attempt to move to trash

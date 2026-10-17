@@ -37,6 +37,7 @@ static CGFloat const kStackViewSpacing = 8.0;
 @property(nonatomic) IBOutlet NSButton* fDownloadLimitCheck;
 @property(nonatomic) IBOutlet NSButton* fGlobalLimitCheck;
 @property(nonatomic) IBOutlet NSButton* fRemoveSeedingCompleteCheck;
+@property(nonatomic) IBOutlet NSButton* fSequentialDownloadCheck;
 @property(nonatomic) IBOutlet NSTextField* fUploadLimitField;
 @property(nonatomic) IBOutlet NSTextField* fDownloadLimitField;
 @property(nonatomic) IBOutlet NSTextField* fRatioLimitField;
@@ -422,6 +423,24 @@ static CGFloat const kStackViewSpacing = 8.0;
     [self.fPriorityPopUp selectItemAtIndex:index];
     self.fPriorityPopUp.enabled = YES;
 
+    //get sequential download info
+    enumerator = [self.fTorrents objectEnumerator];
+    torrent = [enumerator nextObject]; //first torrent
+
+    NSInteger sequentialDownload = torrent.sequentialDownload ? NSControlStateValueOn : NSControlStateValueOff;
+
+    while ((torrent = [enumerator nextObject]))
+    {
+        if (sequentialDownload != (torrent.sequentialDownload ? NSControlStateValueOn : NSControlStateValueOff))
+        {
+            sequentialDownload = NSControlStateValueMixed;
+            break;
+        }
+    }
+
+    self.fSequentialDownloadCheck.state = sequentialDownload;
+    self.fSequentialDownloadCheck.enabled = YES;
+
     //get peer info
     enumerator = [self.fTorrents objectEnumerator];
     torrent = [enumerator nextObject]; //first torrent
@@ -654,6 +673,22 @@ static CGFloat const kStackViewSpacing = 8.0;
     [NSNotificationCenter.defaultCenter postNotificationName:@"UpdateOptionsNotification" object:self];
 }
 
+- (IBAction)setSequentialDownload:(id)sender
+{
+    if (((NSButton*)sender).state == NSControlStateValueMixed)
+    {
+        [sender setState:NSControlStateValueOn];
+    }
+    BOOL const enable = ((NSButton*)sender).state == NSControlStateValueOn;
+
+    for (Torrent* torrent in self.fTorrents)
+    {
+        torrent.sequentialDownload = enable;
+    }
+
+    [NSNotificationCenter.defaultCenter postNotificationName:@"UpdateOptionsNotification" object:self];
+}
+
 - (void)setPeersConnectLimit:(id)sender
 {
     NSInteger limit = [sender intValue];
@@ -707,6 +742,9 @@ static CGFloat const kStackViewSpacing = 8.0;
 
         self.fPriorityPopUp.enabled = NO;
         [self.fPriorityPopUp selectItemAtIndex:-1];
+
+        self.fSequentialDownloadCheck.enabled = NO;
+        self.fSequentialDownloadCheck.state = NSControlStateValueOff;
 
         self.fRatioPopUp.enabled = NO;
         [self.fRatioPopUp selectItemAtIndex:-1];

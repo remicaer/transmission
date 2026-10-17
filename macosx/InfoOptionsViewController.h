@@ -30,6 +30,7 @@
 - (IBAction)setRemoveWhenSeedingCompletes:(id)sender;
 
 - (IBAction)setPriority:(id)sender;
+- (IBAction)setSequentialDownload:(id)sender;
 
 - (IBAction)setPeersConnectLimit:(id)sender;
 

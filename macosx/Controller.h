@@ -86,6 +86,7 @@ typedef NS_ENUM(NSUInteger, AddType) { //
 - (IBAction)announceSelectedTorrents:(id)sender;
 
 - (IBAction)verifySelectedTorrents:(id)sender;
+- (IBAction)toggleSequentialDownloadSelected:(id)sender;
 - (void)verifyTorrents:(NSArray<Torrent*>*)torrents;
 
 @property(nonatomic, readonly) NSArray<Torrent*>* selectedTorrents;

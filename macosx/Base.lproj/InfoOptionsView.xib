@@ -26,6 +26,7 @@
                 <outlet property="fRatioPopUp" destination="9" id="74"/>
                 <outlet property="fRemoveSeedingCompleteCheck" destination="113" id="118"/>
                 <outlet property="fSeedingView" destination="wfz-WZ-zVG" id="zLN-y6-kI2"/>
+                <outlet property="fSequentialDownloadCheck" destination="SqD-ck-B01" id="SqD-ot-L01"/>
                 <outlet property="fUploadLimitCheck" destination="8" id="67"/>
                 <outlet property="fUploadLimitField" destination="19" id="71"/>
                 <outlet property="fUploadLimitLabel" destination="18" id="72"/>
@@ -161,6 +162,16 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <button horizontalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="SqD-ck-B01">
+                                    <rect key="frame" x="-1" y="78" width="140" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Download sequentially" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" state="on" allowsMixedState="YES" inset="2" id="SqD-ce-C01">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="setSequentialDownload:" target="-2" id="SqD-ac-A01"/>
+                                    </connections>
+                                </button>
                                 <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="20">
                                     <rect key="frame" x="-2" y="68" width="114" height="14"/>
                                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Transfer Bandwidth" id="23">
@@ -175,12 +186,15 @@
                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="3" secondAttribute="trailing" constant="12" id="19M-yd-RkJ"/>
                                 <constraint firstItem="17" firstAttribute="baseline" secondItem="7" secondAttribute="baseline" id="6lp-wH-7nM"/>
                                 <constraint firstItem="5" firstAttribute="top" secondItem="2Ow-Hq-XLB" secondAttribute="top" id="8HE-P3-twB"/>
-                                <constraint firstItem="20" firstAttribute="top" secondItem="4" secondAttribute="bottom" constant="20" id="CLX-w7-MmF"/>
+                                <constraint firstItem="SqD-ck-B01" firstAttribute="top" secondItem="4" secondAttribute="bottom" constant="8" id="SqD-cn-T01"/>
+                                <constraint firstItem="SqD-ck-B01" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="SqD-cn-L01"/>
+                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="SqD-ck-B01" secondAttribute="trailing" constant="12" id="SqD-cn-R01"/>
+                                <constraint firstItem="20" firstAttribute="top" secondItem="SqD-ck-B01" secondAttribute="bottom" constant="12" id="CLX-w7-MmF"/>
                                 <constraint firstAttribute="trailing" secondItem="18" secondAttribute="trailing" priority="750" constant="12" id="CeH-Sh-0pr"/>
                                 <constraint firstItem="4" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="E1v-VH-x0H"/>
                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5" secondAttribute="trailing" constant="12" id="ER8-uN-lRd"/>
                                 <constraint firstItem="8" firstAttribute="top" secondItem="7" secondAttribute="bottom" constant="6" symbolic="YES" id="GUy-3c-cua"/>
-                                <constraint firstAttribute="height" constant="132" id="GtU-uh-GQQ"/>
+                                <constraint firstAttribute="height" constant="148" id="GtU-uh-GQQ"/>
                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="20" secondAttribute="trailing" constant="12" id="HHX-UQ-91e"/>
                                 <constraint firstItem="6" firstAttribute="leading" secondItem="20" secondAttribute="leading" id="LFB-jF-yvx"/>
                                 <constraint firstItem="6" firstAttribute="top" secondItem="8" secondAttribute="bottom" constant="6" symbolic="YES" id="Lqh-x0-69w"/>

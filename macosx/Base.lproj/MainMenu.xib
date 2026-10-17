@@ -940,6 +940,11 @@ CA
                                     <action selector="verifySelectedTorrents:" target="206" id="3147"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Download Sequentially" id="SqD-mi-M01">
+                                <connections>
+                                    <action selector="toggleSequentialDownloadSelected:" target="206" id="SqD-ma-M01"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -1161,6 +1166,11 @@ CA
                 <menuItem title="Verify Local Data" secondaryImage="bandage" catalog="system" id="3221">
                     <connections>
                         <action selector="verifySelectedTorrents:" target="206" id="3222"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Download Sequentially" id="SqD-mi-C01">
+                    <connections>
+                        <action selector="toggleSequentialDownloadSelected:" target="206" id="SqD-ma-C01"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="3450">
