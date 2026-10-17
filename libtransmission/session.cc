@@ -1033,6 +1033,7 @@ void tr_sessionSetSequentialDownload(tr_session* session, bool is_sequential)
 {
     TR_ASSERT(session != nullptr);
 
+    auto const lock = session->unique_lock();
     session->set_sequential_download(is_sequential);
 }
 

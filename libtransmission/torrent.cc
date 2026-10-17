@@ -1970,6 +1970,8 @@ void tr_torrentSetSequentialDownload(tr_torrent* const tor, bool const is_sequen
 {
     tr_return_if_fail(tr_isTorrent(tor));
 
+    // the change signal makes the peer manager rebuild its wishlist, which the session thread also uses
+    auto const lock = tor->unique_lock();
     tor->set_sequential_download(is_sequential);
 }
 
