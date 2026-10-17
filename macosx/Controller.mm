@@ -254,6 +254,7 @@ static tr_variant getSettingsFromNSUserDefaults(NSUserDefaults* defaults)
     settings.insert_or_assign(TR_KEY_seed_ratio_limit, [defaults floatForKey:@"RatioLimit"]);
     settings.insert_or_assign(TR_KEY_seed_ratio_limited, static_cast<bool>([defaults boolForKey:@"RatioCheck"]));
     settings.insert_or_assign(TR_KEY_rename_partial_files, static_cast<bool>([defaults boolForKey:@"RenamePartialFiles"]));
+    settings.insert_or_assign(TR_KEY_sequential_download, static_cast<bool>([defaults boolForKey:@"SequentialDownload"]));
     settings.insert_or_assign(TR_KEY_rpc_authentication_required, static_cast<bool>([defaults boolForKey:@"RPCAuthorize"]));
     settings.insert_or_assign(TR_KEY_rpc_enabled, static_cast<bool>([defaults boolForKey:@"RPC"]));
     settings.insert_or_assign(TR_KEY_rpc_port, [defaults integerForKey:@"RPCPort"]);

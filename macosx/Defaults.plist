@@ -130,6 +130,8 @@
 	<false/>
 	<key>RenamePartialFiles</key>
 	<true/>
+	<key>SequentialDownload</key>
+	<false/>
 	<key>RPC</key>
 	<false/>
 	<key>RPCAuthorize</key>

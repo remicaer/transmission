@@ -238,6 +238,16 @@ bool tr_sessionIsIncompleteFileNamingEnabled(tr_session const* session);
  */
 void tr_sessionSetIncompleteFileNamingEnabled(tr_session* session, bool enabled);
 
+/** @brief return true if newly-added torrents download their pieces in order */
+bool tr_sessionGetSequentialDownload(tr_session const* session);
+
+/**
+ * @brief Set whether newly-added torrents download their pieces in order
+ *
+ * This is not retroactive -- existing torrents keep their own setting.
+ */
+void tr_sessionSetSequentialDownload(tr_session* session, bool is_sequential);
+
 /** @brief Get whether or not RPC calls are allowed in this session.
     @see `tr_sessionInit()`
     @see `tr_sessionSetRPCEnabled()` */

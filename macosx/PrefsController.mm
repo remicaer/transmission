@@ -1020,6 +1020,11 @@ static NSString* const kWebUIURLFormat = @"http://localhost:%ld/";
     tr_sessionSetIncompleteFileNamingEnabled(self.fHandle, [self.fDefaults boolForKey:@"RenamePartialFiles"]);
 }
 
+- (void)setSequentialDownloadDefault:(id)sender
+{
+    tr_sessionSetSequentialDownload(self.fHandle, [self.fDefaults boolForKey:@"SequentialDownload"]);
+}
+
 - (void)setShowAddMagnetWindow:(id)sender
 {
     [self.fDefaults setBool:(self.fShowMagnetAddWindowCheck.state == NSControlStateValueOn) forKey:@"MagnetOpenAsk"];
@@ -1335,6 +1340,9 @@ static NSString* const kWebUIURLFormat = @"http://localhost:%ld/";
 
     BOOL const usePartialFileRenaming = tr_sessionIsIncompleteFileNamingEnabled(self.fHandle);
     [self.fDefaults setBool:usePartialFileRenaming forKey:@"RenamePartialFiles"];
+
+    BOOL const sequentialDownload = tr_sessionGetSequentialDownload(self.fHandle);
+    [self.fDefaults setBool:sequentialDownload forKey:@"SequentialDownload"];
 
     //utp
     BOOL const utp = tr_sessionIsUTPEnabled(self.fHandle);

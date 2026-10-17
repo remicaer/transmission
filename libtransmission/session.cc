@@ -1022,6 +1022,20 @@ bool tr_sessionIsIncompleteFileNamingEnabled(tr_session const* session)
     return session->isIncompleteFileNamingEnabled();
 }
 
+bool tr_sessionGetSequentialDownload(tr_session const* session)
+{
+    TR_ASSERT(session != nullptr);
+
+    return session->sequential_download();
+}
+
+void tr_sessionSetSequentialDownload(tr_session* session, bool is_sequential)
+{
+    TR_ASSERT(session != nullptr);
+
+    session->set_sequential_download(is_sequential);
+}
+
 // ---
 
 void tr_sessionSetIncompleteDir(tr_session* session, std::string_view const dir)

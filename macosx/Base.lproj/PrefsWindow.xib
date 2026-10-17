@@ -594,6 +594,17 @@
                                                     </binding>
                                                 </connections>
                                             </button>
+                                            <button translatesAutoresizingMaskIntoConstraints="NO" id="SqD-pf-B01">
+                                                <rect key="frame" x="84" y="208" width="270" height="18"/>
+                                                <buttonCell key="cell" type="check" title="Download new transfers sequentially" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="SqD-pf-C01">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="setSequentialDownloadDefault:" target="-2" id="SqD-pf-A01"/>
+                                                    <binding destination="365" name="value" keyPath="values.SequentialDownload" id="SqD-pf-K01"/>
+                                                </connections>
+                                            </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="1476">
                                                 <rect key="frame" x="104" y="114" width="193" height="18"/>
                                                 <buttonCell key="cell" type="check" title="Only when adding manually" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="1477">
@@ -628,12 +639,15 @@
                                         <constraints>
                                             <constraint firstItem="1947" firstAttribute="leading" secondItem="59" secondAttribute="leading" id="04r-iS-yVo"/>
                                             <constraint firstItem="209" firstAttribute="leading" secondItem="59" secondAttribute="leading" id="1WY-0B-oPc"/>
-                                            <constraint firstItem="115" firstAttribute="top" secondItem="1334" secondAttribute="bottom" constant="4" id="1lv-0a-UmS"/>
+                                            <constraint firstItem="SqD-pf-B01" firstAttribute="top" secondItem="1334" secondAttribute="bottom" constant="4" id="SqD-pf-T01"/>
+                                            <constraint firstItem="SqD-pf-B01" firstAttribute="leading" secondItem="59" secondAttribute="leading" id="SqD-pf-L01"/>
+                                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="SqD-pf-B01" secondAttribute="trailing" constant="20" symbolic="YES" id="SqD-pf-R01"/>
+                                            <constraint firstItem="115" firstAttribute="top" secondItem="SqD-pf-B01" secondAttribute="bottom" constant="4" id="1lv-0a-UmS"/>
                                             <constraint firstItem="352" firstAttribute="trailing" secondItem="61" secondAttribute="trailing" id="46r-zf-9Dz"/>
                                             <constraint firstAttribute="width" priority="750" constant="456" id="5MD-kx-1og"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="1339" secondAttribute="trailing" constant="20" symbolic="YES" id="7mT-PQ-YW1"/>
                                             <constraint firstItem="1339" firstAttribute="leading" secondItem="1293" secondAttribute="leading" constant="20" id="7qB-KK-BGx"/>
-                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="209" secondAttribute="bottom" constant="57" id="89P-iu-qPB"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="209" secondAttribute="bottom" constant="35" id="89P-iu-qPB"/>
                                             <constraint firstItem="51" firstAttribute="leading" secondItem="59" secondAttribute="trailing" constant="5" id="9cs-sM-t7g"/>
                                             <constraint firstItem="1939" firstAttribute="top" secondItem="115" secondAttribute="bottom" constant="4" id="DPz-89-UIF"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="538" secondAttribute="trailing" constant="20" symbolic="YES" id="Dlu-at-N1m"/>
