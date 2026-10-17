@@ -5708,7 +5708,7 @@ static void removeKeRangerRansomware()
 {
     if (error != nil)
     {
-        *error = [NSError errorWithDomain:SUSparkleErrorDomain code:SUNoUpdateError userInfo:@{
+        *error = [NSError errorWithDomain:@"org.m0k.transmission.fork" code:1 userInfo:@{
             NSLocalizedDescriptionKey : @"Updates are disabled in this unofficial fork. "
                                         @"Check https://github.com/remicaer/transmission/releases for new builds."
         }];

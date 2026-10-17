@@ -83,6 +83,8 @@
 	<true/>
 	<key>SUAllowsAutomaticUpdates</key>
 	<false/>
+	<key>SUEnableAutomaticChecks</key>
+	<false/>
 	<key>SUFeedURL</key>
 	<string>https://update.transmissionbt.com/appcast.xml</string>
 	<key>SUPublicEDKey</key>
