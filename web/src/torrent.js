@@ -216,6 +216,9 @@ export class Torrent extends EventTarget {
   getQueuePosition() {
     return this.fields.queue_position;
   }
+  isSequentialDownload() {
+    return Boolean(this.fields.sequential_download);
+  }
   getRecheckProgress() {
     return this.fields.recheck_progress;
   }
@@ -623,6 +626,7 @@ Torrent.Fields.Stats = [
   'recheck_progress',
   'seed_ratio_mode',
   'seed_ratio_limit',
+  'sequential_download',
   'size_when_done',
   'status',
   'trackers',

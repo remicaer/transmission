@@ -272,6 +272,15 @@ export class Remote {
       context,
     );
   }
+  setSequentialDownload(torrent_ids, enabled, callback, context) {
+    this.sendTorrentSetRequests(
+      'torrent_set',
+      torrent_ids,
+      { sequential_download: enabled },
+      callback,
+      context,
+    );
+  }
   reannounceTorrents(torrent_ids, callback, context) {
     this.sendTorrentActionRequests(
       'torrent_reannounce',

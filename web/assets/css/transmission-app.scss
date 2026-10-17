@@ -1436,6 +1436,20 @@ a {
       background-color: var(--color-bg-warn);
       color: var(--color-fg-warn);
     }
+
+    &[aria-checked='true']::before {
+      content: '✓';
+      margin-left: -12px;
+      width: 12px;
+      display: inline-block;
+    }
+
+    &[aria-checked='mixed']::before {
+      content: '–';
+      margin-left: -12px;
+      width: 12px;
+      display: inline-block;
+    }
   }
 }
 
