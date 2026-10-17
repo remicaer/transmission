@@ -5703,4 +5703,17 @@ static void removeKeRangerRansomware()
     return [NSUserDefaults.standardUserDefaults boolForKey:@"AutoUpdateBeta"] ? [NSSet setWithObject:@"beta"] : NSSet.set;
 }
 
+// This unofficial fork is not published to the official update feed, which would replace it with upstream Transmission
+- (BOOL)updater:(SPUUpdater*)updater mayPerformUpdateCheck:(SPUUpdateCheck)updateCheck error:(NSError* __autoreleasing*)error
+{
+    if (error != nil)
+    {
+        *error = [NSError errorWithDomain:SUSparkleErrorDomain code:SUNoUpdateError userInfo:@{
+            NSLocalizedDescriptionKey : @"Updates are disabled in this unofficial fork. "
+                                        @"Check https://github.com/remicaer/transmission/releases for new builds."
+        }];
+    }
+    return NO;
+}
+
 @end
