@@ -78,6 +78,7 @@ static ToolbarItemIdentifier const ToolbarItemIdentifierPauseResumeSelected = @"
 static ToolbarItemIdentifier const ToolbarItemIdentifierFilter = @"Toolbar Toggle Filter";
 static ToolbarItemIdentifier const ToolbarItemIdentifierQuickLook = @"Toolbar QuickLook";
 static ToolbarItemIdentifier const ToolbarItemIdentifierShare = @"Toolbar Share";
+static ToolbarItemIdentifier const ToolbarItemIdentifierSequentialDownload = @"Toolbar Sequential Download";
 
 typedef NS_ENUM(NSUInteger, ToolbarGroupTag) { //
     ToolbarGroupTagPause = 0,
@@ -2315,6 +2316,7 @@ static void removeKeRangerRansomware()
         torrent.sequentialDownload = enable;
     }
 
+    [self.fWindow.toolbar validateVisibleItems];
     [NSNotificationCenter.defaultCenter postNotificationName:@"UpdateOptionsNotification" object:self];
 }
 
@@ -4459,6 +4461,20 @@ static void removeKeRangerRansomware()
 
         return item;
     }
+    else if ([ident isEqualToString:ToolbarItemIdentifierSequentialDownload])
+    {
+        ButtonToolbarItem* item = [self standardToolbarButtonWithIdentifier:ident];
+        ((NSButtonCell*)((NSButton*)item.view).cell).showsStateBy = NSContentsCellMask; //blue when enabled
+
+        item.label = NSLocalizedString(@"Sequential", "Sequential download toolbar item -> label");
+        item.paletteLabel = NSLocalizedString(@"Download Sequentially", "Sequential download toolbar item -> palette label");
+        item.toolTip = NSLocalizedString(@"Download the selected transfers in order, from first piece to last", "Sequential download toolbar item -> tooltip");
+        item.image = [NSImage imageWithSystemSymbolName:@"list.number" accessibilityDescription:nil];
+        item.target = self;
+        item.action = @selector(toggleSequentialDownloadSelected:);
+
+        return item;
+    }
     else if ([ident isEqualToString:ToolbarItemIdentifierShare])
     {
         ShareToolbarItem* item = [self toolbarButtonWithIdentifier:ident forToolbarButtonClass:[ShareToolbarItem class]];
@@ -4521,6 +4537,7 @@ static void removeKeRangerRansomware()
         ToolbarItemIdentifierRemove,
         ToolbarItemIdentifierPauseResumeSelected,
         ToolbarItemIdentifierPauseResumeAll,
+        ToolbarItemIdentifierSequentialDownload,
         ToolbarItemIdentifierShare,
         ToolbarItemIdentifierQuickLook,
         ToolbarItemIdentifierFilter,
@@ -4539,6 +4556,7 @@ static void removeKeRangerRansomware()
         NSToolbarSpaceItemIdentifier,
         ToolbarItemIdentifierPauseResumeAll,
         NSToolbarFlexibleSpaceItemIdentifier,
+        ToolbarItemIdentifierSequentialDownload,
         ToolbarItemIdentifierShare,
         ToolbarItemIdentifierQuickLook,
         ToolbarItemIdentifierFilter,
@@ -4628,6 +4646,23 @@ static void removeKeRangerRansomware()
     {
         ((NSButton*)toolbarItem.view).state = self.fPreviewPanel != nil;
         return self.fTableView.numberOfSelectedRows > 0;
+    }
+
+    //set sequential download item: on only when every selected transfer is sequential
+    if ([ident isEqualToString:ToolbarItemIdentifierSequentialDownload])
+    {
+        NSArray<Torrent*>* torrents = self.fTableView.selectedTorrents;
+        BOOL allOn = torrents.count > 0;
+        for (Torrent* torrent in torrents)
+        {
+            if (!torrent.sequentialDownload)
+            {
+                allOn = NO;
+                break;
+            }
+        }
+        ((NSButton*)toolbarItem.view).state = allOn ? NSControlStateValueOn : NSControlStateValueOff;
+        return torrents.count > 0;
     }
 
     //enable share item
