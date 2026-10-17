@@ -5659,4 +5659,10 @@ void onTorrentCompletenessChanged(tr_torrent* tor, tr_completeness status, bool 
     return [VersionComparator new];
 }
 
+// This unofficial fork is not published to the official update feed, which would replace it with upstream Transmission
+- (BOOL)updaterMayCheckForUpdates:(SUUpdater*)updater
+{
+    return NO;
+}
+
 @end
