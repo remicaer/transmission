@@ -9,6 +9,7 @@
 #include <chrono>
 #include <cstddef> // size_t
 #include <ctime>
+#include <future>
 #include <map>
 #include <sstream>
 #include <ranges>
@@ -1970,9 +1971,17 @@ void tr_torrentSetSequentialDownload(tr_torrent* const tor, bool const is_sequen
 {
     tr_return_if_fail(tr_isTorrent(tor));
 
-    // the change signal makes the peer manager rebuild its wishlist, which the session thread also uses
-    auto const lock = tor->unique_lock();
-    tor->set_sequential_download(is_sequential);
+    // the change signal makes the peer manager rebuild its wishlist, which only the session thread may touch.
+    // wait for it so callers immediately read back the new value.
+    auto done_promise = std::promise<void>{};
+    auto done_future = done_promise.get_future();
+    tor->session->run_in_session_thread(
+        [tor, is_sequential, &done_promise]()
+        {
+            tor->set_sequential_download(is_sequential);
+            done_promise.set_value();
+        });
+    done_future.wait();
 }
 
 // ---
