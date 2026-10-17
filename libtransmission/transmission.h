@@ -571,6 +571,9 @@ void tr_sessionSetDeleteSource(tr_session* session, bool delete_source);
 tr_priority_t tr_torrentGetPriority(tr_torrent const* tor);
 void tr_torrentSetPriority(tr_torrent* tor, tr_priority_t priority);
 
+bool tr_torrentUsesSequentialDownload(tr_torrent const* tor);
+void tr_torrentUseSequentialDownload(tr_torrent* tor, bool enabled);
+
 int tr_sessionGetAntiBruteForceThreshold(tr_session const* session);
 void tr_sessionSetAntiBruteForceThreshold(tr_session* session, int max_bad_requests);
 

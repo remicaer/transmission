@@ -9,6 +9,7 @@
 #include <chrono>
 #include <cstddef> // size_t
 #include <ctime>
+#include <future>
 #include <map>
 #include <sstream>
 #include <string>
@@ -1932,6 +1933,32 @@ void tr_torrentSetPriority(tr_torrent* const tor, tr_priority_t const priority)
 
         tor->set_dirty();
     }
+}
+
+// ---
+
+bool tr_torrentUsesSequentialDownload(tr_torrent const* tor)
+{
+    tr_return_val_if_fail(tr_isTorrent(tor), false);
+
+    return tor->is_sequential_download();
+}
+
+void tr_torrentUseSequentialDownload(tr_torrent* tor, bool enabled)
+{
+    tr_return_if_fail(tr_isTorrent(tor));
+
+    // the setter flushes the cache and rebuilds the peer wishlist, which only the session thread may touch.
+    // wait for it so callers immediately read back the new value.
+    auto done_promise = std::promise<void>{};
+    auto done_future = done_promise.get_future();
+    tor->session->run_in_session_thread(
+        [tor, enabled, &done_promise]()
+        {
+            tor->set_sequential_download(enabled);
+            done_promise.set_value();
+        });
+    done_future.wait();
 }
 
 // ---
