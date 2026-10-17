@@ -281,6 +281,44 @@ static tr_variant getSettingsFromNSUserDefaults(NSUserDefaults* defaults)
     return tr_variant{ std::move(settings) };
 }
 
+// SF Symbols has no slashed variant of "list.number", so the "off" image draws its own slash
+static NSImage* sequentialDownloadToolbarImage(BOOL enabled)
+{
+    static NSImage* onImage;
+    static NSImage* offImage;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        onImage = [NSImage imageWithSystemSymbolName:@"list.number"
+                            accessibilityDescription:NSLocalizedString(@"Sequential download on", "Toolbar item -> accessibility")];
+
+        NSImage* base = onImage;
+        offImage = [NSImage imageWithSize:base.size flipped:NO drawingHandler:^BOOL(NSRect rect) {
+            [base drawInRect:rect];
+
+            NSBezierPath* slash = [NSBezierPath bezierPath];
+            NSRect const slashRect = NSInsetRect(rect, NSWidth(rect) * 0.1, NSHeight(rect) * 0.05);
+            [slash moveToPoint:NSMakePoint(NSMinX(slashRect), NSMaxY(slashRect))];
+            [slash lineToPoint:NSMakePoint(NSMaxX(slashRect), NSMinY(slashRect))];
+            slash.lineCapStyle = NSLineCapStyleRound;
+            [NSColor.blackColor set];
+
+            //clear a gap around the slash so it stays legible over the symbol
+            NSGraphicsContext.currentContext.compositingOperation = NSCompositingOperationDestinationOut;
+            slash.lineWidth = 3.5;
+            [slash stroke];
+
+            NSGraphicsContext.currentContext.compositingOperation = NSCompositingOperationSourceOver;
+            slash.lineWidth = 1.5;
+            [slash stroke];
+            return YES;
+        }];
+        [offImage setTemplate:YES];
+        offImage.accessibilityDescription = NSLocalizedString(@"Sequential download off", "Toolbar item -> accessibility");
+    });
+
+    return enabled ? onImage : offImage;
+}
+
 // 2.90 was infected with ransomware which we now check for and attempt to remove
 static void removeKeRangerRansomware()
 {
@@ -4469,7 +4507,7 @@ static void removeKeRangerRansomware()
         item.label = NSLocalizedString(@"Sequential", "Sequential download toolbar item -> label");
         item.paletteLabel = NSLocalizedString(@"Download Sequentially", "Sequential download toolbar item -> palette label");
         item.toolTip = NSLocalizedString(@"Download the selected transfers in order, from first piece to last", "Sequential download toolbar item -> tooltip");
-        item.image = [NSImage imageWithSystemSymbolName:@"list.number" accessibilityDescription:nil];
+        item.image = sequentialDownloadToolbarImage(NO);
         item.target = self;
         item.action = @selector(toggleSequentialDownloadSelected:);
 
@@ -4662,6 +4700,7 @@ static void removeKeRangerRansomware()
             }
         }
         ((NSButton*)toolbarItem.view).state = allOn ? NSControlStateValueOn : NSControlStateValueOff;
+        toolbarItem.image = sequentialDownloadToolbarImage(allOn);
         return torrents.count > 0;
     }
 
