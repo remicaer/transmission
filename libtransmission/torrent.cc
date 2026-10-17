@@ -1959,6 +1959,22 @@ void tr_torrentSetPriority(tr_torrent* const tor, tr_priority_t const priority)
 
 // ---
 
+bool tr_torrentGetSequentialDownload(tr_torrent const* tor)
+{
+    tr_return_val_if_fail(tr_isTorrent(tor), false);
+
+    return tor->is_sequential_download();
+}
+
+void tr_torrentSetSequentialDownload(tr_torrent* const tor, bool const is_sequential)
+{
+    tr_return_if_fail(tr_isTorrent(tor));
+
+    tor->set_sequential_download(is_sequential);
+}
+
+// ---
+
 void tr_torrentSetPeerLimit(tr_torrent* tor, uint16_t max_connected_peers)
 {
     tr_return_if_fail(tr_isTorrent(tor));

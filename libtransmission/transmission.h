@@ -416,6 +416,9 @@ void tr_sessionSetDeleteSource(tr_session* session, bool delete_source);
 tr_priority_t tr_torrentGetPriority(tr_torrent const* tor);
 void tr_torrentSetPriority(tr_torrent* tor, tr_priority_t priority);
 
+bool tr_torrentGetSequentialDownload(tr_torrent const* tor);
+void tr_torrentSetSequentialDownload(tr_torrent* tor, bool is_sequential);
+
 // ---
 
 /**

@@ -2295,6 +2295,29 @@ static void removeKeRangerRansomware()
     [self verifyTorrents:self.fTableView.selectedTorrents];
 }
 
+- (void)toggleSequentialDownloadSelected:(id)sender
+{
+    NSArray<Torrent*>* torrents = self.fTableView.selectedTorrents;
+
+    //turn on unless every selected torrent is already sequential
+    BOOL enable = NO;
+    for (Torrent* torrent in torrents)
+    {
+        if (!torrent.sequentialDownload)
+        {
+            enable = YES;
+            break;
+        }
+    }
+
+    for (Torrent* torrent in torrents)
+    {
+        torrent.sequentialDownload = enable;
+    }
+
+    [NSNotificationCenter.defaultCenter postNotificationName:@"UpdateOptionsNotification" object:self];
+}
+
 - (void)verifyTorrents:(NSArray<Torrent*>*)torrents
 {
     for (Torrent* torrent in torrents)
@@ -4983,6 +5006,32 @@ static void removeKeRangerRansomware()
             }
         }
         return NO;
+    }
+
+    //enable sequential download item
+    if (action == @selector(toggleSequentialDownloadSelected:))
+    {
+        if (!canUseTable)
+        {
+            menuItem.state = NSControlStateValueOff;
+            return NO;
+        }
+
+        BOOL anyOn = NO, anyOff = NO;
+        for (Torrent* torrent in self.fTableView.selectedTorrents)
+        {
+            if (torrent.sequentialDownload)
+            {
+                anyOn = YES;
+            }
+            else
+            {
+                anyOff = YES;
+            }
+        }
+
+        menuItem.state = anyOn ? (anyOff ? NSControlStateValueMixed : NSControlStateValueOn) : NSControlStateValueOff;
+        return anyOn || anyOff;
     }
 
     //enable move torrent file item

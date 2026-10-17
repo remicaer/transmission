@@ -517,6 +517,16 @@ static tr_torrent_rename_done_func makeRenameDoneCallback(NSDictionary* contextI
     return tr_torrentSetPriority(self.fHandle, priority);
 }
 
+- (BOOL)sequentialDownload
+{
+    return tr_torrentGetSequentialDownload(self.fHandle);
+}
+
+- (void)setSequentialDownload:(BOOL)sequentialDownload
+{
+    tr_torrentSetSequentialDownload(self.fHandle, sequentialDownload);
+}
+
 + (BOOL)trashFile:(NSString*)path error:(NSError**)error
 {
     // Attempt to move to trash
