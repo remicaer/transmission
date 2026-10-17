@@ -1,3 +1,31 @@
+> [!WARNING]
+> **This is an unofficial, entirely vibecoded fork of Transmission.**
+> Every change in it was written by an AI coding assistant (Claude), because Remi wanted a sequential download toggle in Transmission for her own use.
+> It is not affiliated with or endorsed by the Transmission project, it has had no real review or testing beyond "it works on Remi's Mac", and it is not maintained.
+> It's online only in case someone else finds it helpful. **Use it at your own risk.** For anything serious, use [official Transmission](https://transmissionbt.com/).
+
+## What this fork adds
+
+A **sequential download** toggle, so pieces download in order (handy for previewing a video while it's still downloading). Upstream Transmission already supports sequential download in its engine and RPC, but its GUIs have no switch for it ([transmission/transmission#6257](https://github.com/transmission/transmission/issues/6257)). This fork adds one to:
+
+* **macOS app**
+  * a **Download Sequentially** toolbar button (add it via right-click on the toolbar → *Customize Toolbar…*); the icon is crossed out when sequential download is off
+  * a **Download sequentially** checkbox in Inspector → Options
+  * a **Download Sequentially** item in the Transfers menu and the right-click menu
+  * a **Download new transfers sequentially** setting in Preferences → Transfers → Adding, to make it the default for newly added torrents
+* **Web UI**: a **Download sequentially** item in the right-click menu
+
+The GTK and Qt apps are unchanged.
+
+## Download (macOS)
+
+Grab `Transmission-sequential-macOS.zip` from the [Releases page](https://github.com/remicaer/transmission/releases).
+
+* The app is **not signed or notarized**, so macOS will block it the first time. Either right-click the app → **Open**, or go to System Settings → Privacy & Security → **Open Anyway**. If macOS says it is "damaged", run `xattr -dr com.apple.quarantine /path/to/Transmission.app`.
+* It shares settings and the torrent list with official Transmission (same bundle ID). Don't run both at once.
+* Automatic updates are disabled, so it never "updates" itself back to official Transmission. Check the Releases page for new builds.
+* Translations are not included in the release build; the UI is English only.
+
 ## About
 
 Transmission is a fast, easy, and free BitTorrent client. It comes in several flavors:
